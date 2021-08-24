@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Calculator</title>
+</head>
+<body>
+    <div class="calculator-wrapper">
+        <div class="calc-output">0</div>
+        <div class="buttons-wrapper">
+            <button class="clear-btn button">AC</button>
+            <button class="neg-btn button">+/-</button>
+            <button class="percent-btn button">%</button>
+            <button class="op-btn" id="divide-btn">/</button>            
+            <button class="number-btn button">7</button>
+            <button class="number-btn button">8</button>
+            <button class="number-btn button">9</button>
+            <button class="op-btn" id="multiply-btn">*</button>
+            <button class="number-btn button">4</button>
+            <button class="number-btn button">5</button>
+            <button class="number-btn button">6</button>
+            <button class="op-btn" id="subtract-btn">-</button>
+            <button class="number-btn button">1</button>
+            <button class="number-btn button">2</button>
+            <button class="number-btn button">3</button>
+            <button class="op-btn" id="add-btn">+</button>
+            <button class="number-btn button" id="zero-btn">0</button>
+            <button class="decimal-btn button">.</button>
+            <button class="equals-btn button">=</button>           
+        </div>
+    </div>
+
+    <script>
+        //vars
+
+        const characters = document.querySelectorAll('.button');
+        const numberButtons = document.querySelectorAll('.number-btn');
+        const operationButtons = document.querySelectorAll('.op-btn');
+        const equalsButton = document.querySelector('.equals-btn');
+        const outputField = document.querySelector('.calc-output');
+        const negativeToggleBtn = document.querySelector('.neg-btn');
+        const percBtn = document.querySelector('.percent-btn');
+        const decimalBtn = document.querySelector('.decimal-btn');
+        const clearButton = document.querySelector('.clear-btn');
+
+        const divideButton = document.getElementById('divide-btn');
+        const multiplyButton = document.getElementById('multiply-btn');
+        const subtractButton = document.getElementById('subtract-btn');
+        const addButton = document.getElementById('add-btn');
+
+        let beforeOperation;
+        let afterOperation;
+        let operationSign;
+        
+        let operationHas = false;
+        let cleared;
+        let digitCount = 0;
+
+        let beforeDecimalDigitCount = 0;
+        let afterDecimalDigitCount = 0;
+        
+        //functions
+
+        function appendNumber(button) {
+            console.log(operationHas);
+            addButton.classList.remove('op-btn-white');
+            subtractButton.classList.remove('op-btn-white');
+            multiplyButton.classList.remove('op-btn-white');
+            divideButton.classList.remove('op-btn-white');
+            
+            if (outputField.textContent.length >= 9) {
+                return;
+            }
+
+            if (outputField.textContent.includes(".")) {
+                afterDecimalDigitCount += 1;
+            } else {
+                beforeDecimalDigitCount += 1;
+            }
+
+            cleared = false;
+            console.log(beforeDecimalDigitCount + " before decimal count", afterDecimalDigitCount + " after decimal count");
+
+
+            if (outputField.textContent == "0") {
+                outputField.textContent = button.toString();
+            } else {
+                outputField.textContent = outputField.textContent.toString() + button.toString();
+            }
+        }
+
+
+        function appendDecimal() {
+
+            addButton.classList.remove('op-btn-white');
+            subtractButton.classList.remove('op-btn-white');
+            multiplyButton.classList.remove('op-btn-white');
+            divideButton.classList.remove('op-btn-white');
+
+            if (outputField.textContent.includes(".")) {
+                return;
+            } else if (operationHas == true) {
+                outputField.textContent = "0" + decimalBtn.innerText.toString();
+                operationHas = false;
+            } else {
+                outputField.textContent = outputField.textContent.toString() + decimalBtn.innerText.toString();
+            }   
+                 
+        }
+
+        function operation(button) {
+
+            equalsButton.classList.remove('equals-btn-red');
+
+            console.log(beforeDecimalDigitCount + " before decimal count", afterDecimalDigitCount + " after decimal count");
+            
+            if (operationHas == false && afterOperation == outputField.textContent) {
+                equals();
+                console.log(afterOperation + " after op");
+            };
+
+            operationHas = true;
+            if (operationHas == true) {
+                operationSign = button;
+            }
+
+            switch (operationSign) {
+                case '+':
+                    addButton.classList.add('op-btn-white');
+                    subtractButton.classList.remove('op-btn-white');
+                    multiplyButton.classList.remove('op-btn-white');
+                    divideButton.classList.remove('op-btn-white');
+                    break;
+                case '-':
+                    subtractButton.classList.add('op-btn-white');
+                    addButton.classList.remove('op-btn-white');
+                    multiplyButton.classList.remove('op-btn-white');
+                    divideButton.classList.remove('op-btn-white');
+                    break;
+                case '*':
+                    multiplyButton.classList.add('op-btn-white');
+                    divideButton.classList.remove('op-btn-white');
+                    addButton.classList.remove('op-btn-white');
+                    subtractButton.classList.remove('op-btn-white');
+                    break;
+                case '/':
+                    divideButton.classList.add('op-btn-white');
+                    multiplyButton.classList.remove('op-btn-white');
+                    addButton.classList.remove('op-btn-white');
+                    subtractButton.classList.remove('op-btn-white');
+                    break;
+            };
+
+            beforeOperation = outputField.textContent;
+            console.log(operationHas);
+            
+        }
+
+
+
+        function fieldAfterOp(button) {
+
+            addButton.classList.remove('op-btn-white');
+            subtractButton.classList.remove('op-btn-white');
+            multiplyButton.classList.remove('op-btn-white');
+            divideButton.classList.remove('op-btn-white');
+
+            if(operationHas == true) {
+                operationHas = false;
+                outputField.textContent = "" + button;                
+            } else if (operationHas == false) {
+                outputField.textContent == outputField.textContent + button;
+            };
+            
+            afterOperation = outputField.textContent;
+            
+        }
+
+        
+        function percentToggle() {
+            if (afterOperation == null || outputField.textContent == "") {
+                return;
+            };
+
+            switch (operationSign) {
+                case '+':
+                    afterOperation = (beforeOperation * afterOperation) / 100;
+                    break;
+                case '-':
+                    afterOperation = (beforeOperation * afterOperation) / 100;
+                    break;
+                case '*':
+                    if (parseInt(outputField.textContent) >= parseInt(100)) {
+
+                            afterOperation = (outputField.textContent / 100);
+                    } else {
+                        afterOperation = parseInt(outputField.textContent) / parseInt(100);
+
+                        }
+                    break;
+                case '/':
+                    if (parseInt(outputField.textContent) >= parseInt(100)) {
+
+                            afterOperation = (outputField.textContent / 100);
+                    } else {
+                            afterOperation = parseInt(outputField.textContent) / parseInt(100);
+
+                            }
+                    break;
+            }
+
+            outputField.textContent = afterOperation;
+
+            if (afterOperation == null) {
+
+                return;
+            };
+
+
+        }
+
+
+        function equals() {
+
+            if (cleared === true) {
+                return;
+            }
+
+            
+
+            if (beforeOperation == undefined) {
+                return;
+            }
+
+           // console.log(outputField.textContent);
+
+           // console.log(beforeOperation + " before");
+           // console.log(operationSign);
+           // console.log(afterOperation + " after");  
+
+            //decimal stuff
+            //if (outputField.textContent.includes(".0")) {
+              //  console.log("dec with zero");
+           // } else if (outputField.textContent.includes("." + ("1", "2", "3", "4", "5", "6", "7", "8", "9"))) {
+            //    console.log("dec with num");
+          //  } else if (outputField.textContent.includes(".")) {
+           //     console.log("just dec");
+          //  }
+            
+            //if (!outputField.textContent.includes("." + `${numberButtons}`) || outputField.textContent.includes(".0")) {
+              //  outputField.textContent = outputField.textContent.replace(".0", "");
+              //  outputField.textContent = outputField.textContent.replace(".", "");                
+          //  } else if (outputField.textContent.includes("." + `${numberButtons}`)) {
+            //    console.log("poppop");
+           // }
+
+            let stored = afterOperation;
+            let calculation;
+
+            if(afterOperation == null) {
+                return;
+            }
+
+            switch (operationSign) {
+                case '+':                    
+                    calculation = parseFloat(beforeOperation) + parseFloat(afterOperation);
+                   // console.log(calculation + " calc output", calculation.toString().length + " calc length");
+                  //  if (calculation.toString().length > 9) {
+                  //      outputField.textContent = parseFloat(calculation.toString().slice(0, 10));
+                  //  } else {
+                  //      outputField.textContent = parseFloat(calculation);
+                  //  }                                                             
+                    break;
+                case '-':
+                    calculation = beforeOperation - afterOperation;
+                  //  console.log(calculation + " calc output", calculation.toString().length + " calc length");
+                  //  if (calculation.toString().length > 9) {
+                  //      outputField.textContent = parseFloat(calculation.toString().slice(0, 10));
+                  //  } else {
+                  //      outputField.textContent = parseFloat(calculation);
+                  //  }                                                                                
+                    break;
+                case '/':
+                    calculation = beforeOperation / afterOperation;
+                   // console.log(calculation + " calc output", calculation.toString().length + " calc length");
+                   // if (calculation.toString().length > 9) {
+                   //     outputField.textContent = parseFloat(calculation.toString().slice(0, 10));
+                   // } else {
+                   //     outputField.textContent = parseFloat(calculation);
+                   // }                                           
+                    break;
+                case '*':
+                    calculation = beforeOperation * afterOperation;
+                   // console.log(calculation + " calc output", calculation.toString().length + " calc length");
+                   // if (calculation.toString().length > 9) {
+                   //     outputField.textContent = parseFloat(calculation.toString().slice(0, 10));
+                   //     console.log("plplp");
+                   // } else {
+                   //     outputField.textContent = parseFloat(calculation.toString().slice(0, 10));
+                   //     console.log("uhuhuhuh");
+                   // }                                                            
+                    break;
+            }
+            
+            console.log(calculation + " calculation");
+            outputField.textContent = parseFloat(calculation.toString().slice(0, 10));
+
+            if (outputField.textContent.length >= 10 && parseFloat(outputField.textContent) > 999999999) {
+                equalsButton.classList.add('equals-btn-red');
+                return;
+            }
+                
+            afterOperation = stored;
+            beforeOperation = calculation;
+
+            if (parseFloat(outputField.textContent) > 999999999) {
+                    outputField.style.fontSize = "50px";
+                    console.log(outputField.textContent.length + " length");
+                    
+                } else if (outputField.textContent.length > 10 && outputField.textContent.includes(".")) {
+                    outputField.style.fontSize = "50px";
+                    
+                }
+                
+            
+            console.log(stored + " stored");
+            
+            console.log("");       
+        }
+
+
+        function clear() {
+            equalsButton.classList.remove('equals-btn-red');
+            beforeDecimalDigitCount = 0;
+            afterDecimalDigitCount = 0;
+            operationHas = false;
+            digitCount = 0;
+            cleared = true;
+            outputField.textContent = "0";
+            afterOperation = undefined;
+            beforeOperation = undefined;
+            stored = undefined;
+            outputField.style.fontSize = "55px";
+            addButton.classList.remove('op-btn-white');
+            subtractButton.classList.remove('op-btn-white');
+            multiplyButton.classList.remove('op-btn-white');
+            divideButton.classList.remove('op-btn-white');
+        }
+
+
+        function negativeToggle() {
+            if (outputField.textContent.includes("-")) {
+                outputField.textContent = outputField.textContent.replace("-", "");
+                return;
+            } else if (outputField.textContent == "0") {
+                return;
+            } else {
+                outputField.textContent = "-" + outputField.textContent;       
+            }    
+        }
+
+        //event listeners
+
+        numberButtons.forEach(button => { 
+            button.addEventListener('click', () => {
+                appendNumber(button.innerText);
+                fieldAfterOp(button.innerText);
+            });
+            });
+
+        clearButton.addEventListener('click', clear);
+
+        operationButtons.forEach(button => { 
+            button.addEventListener('click', () => {
+            operation(button.innerText);
+        });
+        });
+
+        equalsButton.addEventListener('click', equals);
+
+        negativeToggleBtn.addEventListener('click', negativeToggle);
+
+        percBtn.addEventListener('click', percentToggle);
+
+        decimalBtn.addEventListener('click', appendDecimal);
+
+
+    </script>
+</body>
+</html>
